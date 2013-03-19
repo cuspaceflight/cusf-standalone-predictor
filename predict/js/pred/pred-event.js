@@ -176,6 +176,8 @@ function EH_ScenarioInfo() {
             }
         });
     });
+
+    $("#unpranker").click(unprankPrediction);
 }
 
 function EH_LocationSave() {

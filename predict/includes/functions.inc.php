@@ -203,4 +203,13 @@ function getModelByUUID($uuid) {
     }
 }
 
+function prankSwitch($if_unset, $if_yes, $if_no) {
+    if (!isset($_GET['pranked']))
+        return $if_unset;
+    elseif ($_GET['pranked'] == 'true')
+        return $if_yes;
+    else
+        return $if_no;
+}
+
 ?>

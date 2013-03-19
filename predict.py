@@ -21,6 +21,8 @@ import shutil
 import bisect
 import simplejson as json
 
+import prank
+
 statsd.init_statsd({'STATSD_BUCKET_PREFIX': 'habhub.predictor'})
 
 # We use Pydap from http://pydap.org/.
@@ -57,6 +59,7 @@ progress = {
     'warnings': False,
     'pred_output': [],
     'error': '',
+    'prank_ok': False,
     }
 
 def update_progress(**kwargs):
@@ -307,6 +310,19 @@ def main():
 
     shutil.rmtree(gfs_dir)
 
+    if exit_code != 1:
+        prank_ok = False
+        try:
+            prank.prank_hook(uuid, options.preds_path)
+        except:
+            tb = traceback.format_exc()
+            sys.stdout.write(tb)
+            pred_output += [line.strip() for line in tb.splitlines()]
+            statsd.increment('prank.prank_exception')
+        else:
+            statsd.increment('prank.prank_ok')
+            prank_ok = True
+
     if exit_code == 1:
         # Hard error from the predictor. Tell the javascript it completed, so that it will show the trace,
         # but pop up a 'warnings' window with the error messages
@@ -315,11 +331,11 @@ def main():
     elif pred_output:
         # Soft error (altitude too low error, typically): pred_output being set forces the debug
         # window open with the messages in
-        update_progress(pred_running=False, pred_complete=True, pred_output=pred_output)
+        update_progress(pred_running=False, pred_complete=True, pred_output=pred_output, prank_ok=prank_ok)
         statsd.increment('success_minor_warnings')
     else:
         assert exit_code == 0
-        update_progress(pred_running=False, pred_complete=True)
+        update_progress(pred_running=False, pred_complete=True, prank_ok=prank_ok)
         statsd.increment('success')
 
 def purge_cache():

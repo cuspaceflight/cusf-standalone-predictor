@@ -20,6 +20,7 @@ define("PREDS_PATH", "preds/");
 // Filenames used by the predictor
 define("SCENARIO_FILE", "scenario.ini");
 define("FLIGHT_CSV", "flight_path.csv");
+define("FLIGHT_CSV_PRANK", "flight_path_prank.csv");
 define("PROGRESS_JSON", "progress.json");
 define("LOG_FILE", "py_log");
 

@@ -59,9 +59,9 @@ function displayOld() {
                     } else {
                         appendDebug("JSON said the prediction completed");
                         processCompletedPrediction(progress);
-                        writePredictionInfo(current_uuid, 
-                            progress['run_time'], 
-                            progress['gfs_timestamp']);
+                        writePredictionInfo(progress['run_time'], 
+                                            progress['gfs_timestamp']);
+                        writeDownloadLinks(current_uuid, progress['prank_ok'], true);
                     }
                 });
         }
@@ -162,18 +162,39 @@ function changeLaunchSite() {
     }
 }
 
-// Populate and enable the download CSV, KML and Pan To links, and write the 
-// time the prediction was run and the model used to the Scenario Info window
-function writePredictionInfo(current_uuid, run_time, gfs_timestamp) {
-    // populate the download links
-    $("#dlcsv").attr("href", "preds/"+current_uuid+"/flight_path.csv");
-    $("#dlkml").attr("href", "kml.php?uuid="+current_uuid);
+// Set up the Pan To link, and write the time the prediction was run and the
+// model used to the Scenario Info window
+function writePredictionInfo(run_time, gfs_timestamp) {
     $("#panto").click(function() {
             map.panTo(map_items['launch_marker'].position);
             //map.setZoom(7);
     });
     $("#run_time").html(POSIXtoHM(run_time, "H:i d/m/Y"));
     $("#gfs_timestamp").html(gfs_timestamp);
+}
+
+// update the CSV and KML links
+// Three states: prank failed, pranked, pranked then unpranked
+// (affects statsd)
+function writeDownloadLinks(current_uuid, prank_ok, prank_enable) {
+    csv_link = "preds/"+current_uuid+"/";
+    kml_link = "kml.php?uuid="+current_uuid;
+
+    if (prank_ok) {
+        kml_link += "&pranked=";
+        if (prank_enable) {
+            kml_link += "true";
+            csv_link += "flight_path_prank.csv";
+        } else {
+            kml_link += "false";
+            csv_link += "flight_path.csv?unpranked";
+        }
+    } else {
+        csv_link += "flight_path.csv";
+    }
+
+    $("#dlcsv").attr("href", csv_link);
+    $("#dlkml").attr("href", kml_link);
 }
 
 // Hide the launch card and scenario information windows, then fade out the
@@ -187,11 +208,20 @@ function handlePred(pred_uuid) {
     // ajax to poll for progress
     ajaxEventHandle = setInterval("getJSONProgress('" 
             + pred_uuid + "')", stdPeriod);
+
+    $("#unpranker_container").hide();
 }
 
 // Get the CSV for a UUID and then pass it to the parseCSV() function
-function getCSV(pred_uuid) {
-    $.get("ajax.php", { "action":"getCSV", "uuid":pred_uuid }, function(data) {
+function getCSV(pred_uuid, prank_ok, prank_enable) {
+    $("#unpranker_container").hide();
+    query_vars = { "action":"getCSV", "uuid":pred_uuid };
+    if (prank_ok)
+        query_vars['pranked'] = (prank_enable ? 'true' : 'false');
+    $.get("ajax.php", query_vars, function(data) {
+            if (prank_ok && prank_enable)
+                $("#unpranker_container").show();
+
             if(data != null) {
                 appendDebug("Got JSON response from server for flight path,"
                     + " parsing...");
@@ -250,7 +280,9 @@ function getJSONProgress(pred_uuid) {
 
 function processCompletedPrediction(progress) {
     // parse the data
-    getCSV(current_uuid);
+    if (progress['prank_ok'])
+        appendDebug("Server asked us to load the pranked version (sorry about that)");
+    getCSV(current_uuid, progress['prank_ok'], true);
     appendDebug("Server gave a prediction run timestamp of " 
         + progress['run_time']);
     appendDebug("Server said it used the " 
@@ -269,8 +301,19 @@ function processCompletedPrediction(progress) {
     if (progress['warnings'])
         throwError(warnings);
 
-    writePredictionInfo(current_uuid, progress['run_time'], 
+    writePredictionInfo(progress['run_time'], 
                         progress['gfs_timestamp']);
+    writeDownloadLinks(current_uuid, progress['prank_ok'], true);
+}
+
+// Load the real prediction.
+function unprankPrediction() {
+    // assume prank_ok = true if we got here.
+    getCSV(current_uuid, true, false);
+    $("#unpranker_container").hide();
+    writePredictionInfo(progress['run_time'], 
+                        progress['gfs_timestamp']);
+    writeDownloadLinks(current_uuid, progress['prank_ok'], false);
 }
 
 // The contents of progress.json are given to this function to process

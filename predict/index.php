@@ -106,6 +106,11 @@ google.load("jqueryui", "1.8.1");
         <a class="control_button" id="showHideForm">Hide Launch Card</a> |
         <a class="control_button" id="about_window_show">About</a>
     </span>
+    <span id="unpranker_container">
+        <br />
+        <br />
+        <a id="unpranker">Very funny guys, where's my prediction?</a>
+    </span>
 </div>
 
 <!-- Save location to cookie -->

@@ -32,6 +32,9 @@ function initUI() {
     $("#burst-calc-close").button();
     $("#burst-calc-advanced-show").button();
     $("#burst-calc-advanced-hide").button();
+
+    $("#unpranker_container").hide();
+    $("#unpranker").button();
 }
 
 // Throw an error window containing <data> and a 'close' link
@@ -54,6 +57,8 @@ function resetGUI() {
     toggleWindow("scenario_info", null, null, null, "show");
     // un-fade the map canvas
     $("#map_canvas").fadeTo(1500, 1);
+
+    $("#unpranker_container").hide()
 }
 
 // Append a line to the debug window and scroll the window to the bottom

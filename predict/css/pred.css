@@ -260,3 +260,7 @@ table#trails th {
 	background-color: #6666ff;
 	color: white;
 }
+
+#unpranker_container {
+    display: none;
+}

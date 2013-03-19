@@ -11,7 +11,7 @@ $software_available = array("gfs", "gfs_hd");
 switch($action) {
 case "getCSV":
     $uuid = $_GET['uuid'];
-    $tryfile = PREDS_PATH . $uuid . "/" . FLIGHT_CSV;
+    $tryfile = PREDS_PATH . $uuid . "/" . prankSwitch(FLIGHT_CSV, FLIGHT_CSV_PRANK, FLIGHT_CSV);
     if(!file_exists($tryfile)) return false;
     $fh = fopen($tryfile, "r");
     $data = array();
@@ -21,7 +21,7 @@ case "getCSV":
     }
     $returned = json_encode($data);
     echo $returned;
-    $stats->counting('habhub.predictor.php.get_csv');
+    $stats->counting('habhub.predictor.php.get_csv' . prankSwitch('', '_pranked', '_unpranked'));
     break;
 
 case "JSONexists":

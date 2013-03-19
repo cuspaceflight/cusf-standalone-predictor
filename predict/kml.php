@@ -26,9 +26,13 @@ $uuid = $_GET['uuid'];
 if ( strlen($uuid) != 40 || !ctype_alnum($uuid) ) die("The supplied UUID was not a valid SHA1 hash");
 
 // Construct paths to required predictor files and check they exist
-$flight_csv = PREDS_PATH . $uuid . "/" . FLIGHT_CSV;
+$flight_csv = PREDS_PATH . $uuid . "/" . prankSwitch(FLIGHT_CSV, FLIGHT_CSV_PRANK, FLIGHT_CSV);
 $scenario_file = PREDS_PATH . $uuid . "/" . SCENARIO_FILE;
 if ( !file_exists( $flight_csv ) || !file_exists( $scenario_file ) ) die("No prediction data for UUID");
+
+// Stats
+$stats = new StatsD();
+$stats->counting('habhub.predictor.php.get_kml' . prankSwitch('', '_pranked', '_unpranked'));
 
 // make the prediction model
 $scenario = parse_ini_file($scenario_file);
