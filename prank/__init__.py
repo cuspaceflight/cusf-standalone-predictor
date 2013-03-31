@@ -4,6 +4,7 @@ import csv
 import statsd
 
 from .dummy import dummy_prank
+from .gravity import prank_path
 
 # statsd should have been initted
 
@@ -31,4 +32,4 @@ def types(reader):
 
 def choose_prank(random):
     statsd.increment('prank.dummy.picked')
-    return dummy_prank
+    return prank_path#dummy_prank
