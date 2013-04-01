@@ -28,7 +28,7 @@ $time = time() + 3600;
 <script type="text/javascript" src="http://www.google.com/jsapi?key=<?php echo GMAPS_API_KEY; ?>">
 </script>
 <script type="text/javascript" src="http://maps.google.com/maps/api/js?sensor=false"></script>
-<link href="css/pred.css" type="text/css" rel="stylesheet" />
+<link href="css/pred.css?2" type="text/css" rel="stylesheet" />
 <link href="css/calc.css" type="text/css" rel="stylesheet" />
 <link rel="stylesheet" href="css/tipsy.css" type="text/css" />
 <link href="css/cupertino/jquery-ui-1.8.1.custom.css" type="text/css" rel="stylesheet">
@@ -43,11 +43,11 @@ google.load("jqueryui", "1.8.1");
 <script src="js/utils/date.jsport.js" type="text/javascript"></script>
 
 <script src="js/pred/pred-config.js" type="text/javascript"></script>
-<script src="js/pred/pred-ui.js" type="text/javascript"></script>
+<script src="js/pred/pred-ui.js?2" type="text/javascript"></script>
 <script src="js/pred/pred-cookie.js" type="text/javascript"></script>
 <script src="js/pred/pred-map.js" type="text/javascript"></script>
-<script src="js/pred/pred-event.js" type="text/javascript"></script>
-<script src="js/pred/pred.js" type="text/javascript"></script>
+<script src="js/pred/pred-event.js?2" type="text/javascript"></script>
+<script src="js/pred/pred.js?2" type="text/javascript"></script>
 <script src="js/calc/calc.js" type="text/javascript"></script>
 
 </head>
