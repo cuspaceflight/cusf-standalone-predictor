@@ -264,3 +264,7 @@ table#trails th {
 #unpranker_container {
     display: none;
 }
+
+#unpranker_container .ui-button-text {
+    color: red;
+}

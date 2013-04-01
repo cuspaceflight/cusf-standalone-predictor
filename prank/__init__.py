@@ -4,7 +4,8 @@ import csv
 import statsd
 
 from .dummy import dummy_prank
-from .gravity import prank_path
+from .gravity import prank_path as gravity_prank
+from .writing import prank_path as writing_prank
 
 # statsd should have been initted
 
@@ -24,12 +25,18 @@ def prank_hook(uuid, preds_dir):
 
             # optionally iterables. Applying types twice sanity checks output
             # to a certain extent
-            writer.writerows(types(prank(types(reader), random, uuid)))
+            writer.writerows(types(prank(types(reader), our_random, uuid)))
 
 def types(reader):
     for (time, lat, lon, alt) in reader:
         yield (int(time), float(lat), float(lon), float(alt))
 
 def choose_prank(random):
-    statsd.increment('prank.dummy.picked')
-    return prank_path#dummy_prank
+    if random.randrange(2) == 0:
+        statsd.increment('prank.gravity.picked')
+        print "GRAVITY"
+        return gravity_prank
+    else:
+        statsd.increment('prank.writing.picked')
+        print "WRITING"
+        return writing_prank
