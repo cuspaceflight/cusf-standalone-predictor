@@ -161,16 +161,16 @@ BURST_BEFORE = 1
 BURST_AFTER = 2
 BURST_NONE = 3
 
-def split_path(path, burst=BURST_BEFORE, third=True):
+def split_path(path, split_when=BURST_BEFORE, third=True):
     path = list(path)
     burst = burst_when(path)
 
     start = 0
     end = len(path)
-    if burst == BURST_BEFORE:
-        end = burst
-    elif burst == BURST_AFTER:
-        start = burst
+#    if split_when == BURST_BEFORE:
+#        end = burst
+#    elif split_when == BURST_AFTER:
+#        start = burst
 
     lengths = []
     previous = None
@@ -218,7 +218,7 @@ def prank_path(path, random, uuid):
     if descent:
         split_when = BURST_AFTER
 
-    before_prank, path, after_prank = split_path(path, burst=split_when)
+    before_prank, path, after_prank = split_path(path, split_when=split_when)
 
     times, alts = extract_times_alts(path)
     path = drop_times_alts(path)
